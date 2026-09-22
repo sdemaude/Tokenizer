@@ -1,46 +1,84 @@
-# Whitepaper : Token42 & Écosystème de Gouvernance Décentralisée
+# Whitepaper — MoiQuandJeCreeUnToken42
 
-## 1. Introduction et Vision
+## 1. Présentation
 
-Le projet Token42 s'inscrit dans le cadre de l'apprentissage des technologies de la blockchain et du développement de smart contracts. L'objectif est de concevoir un actif numérique fongible standardisé tout en intégrant des couches de gouvernance et de sécurité avancées. Ce document présente l'architecture technique, les choix de conception et le modèle fonctionnel du jeton.
+MoiQuandJeCreeUnToken42 est un token fongible créé dans le cadre du projet Tokenizer. Le projet a pour objectif de mettre en œuvre un actif numérique compatible avec les outils usuels de l’écosystème Ethereum et de démontrer ses opérations principales sur un réseau de test public.
 
-## 2. Spécifications du Jeton (Token42)
+Le token n’est pas présenté comme une monnaie réelle, un produit financier ou une promesse de rendement. Le déploiement et les manipulations sont réalisés sur Ethereum Sepolia avec des fonds de test.
 
-Token42 est un actif numérique conforme au standard **ERC-20** sur la blockchain Ethereum (testnet Sepolia), garantissant une interopérabilité totale avec l'écosystème décentralisé (portefeuilles, plateformes d'échange décentralisées et explorateurs de blocs).
+## 2. Choix techniques
 
-* **Nom du jeton :** MoiQuandJeCreeUnToken42
-* **Symbole :** MQCT
-* **Standard :** ERC-20 (via l'implémentation de référence OpenZeppelin)
-* **Offre initiale (Initial Supply) :** 42 000 000 jetons avec une précision de 18 décimales.
-* **Mécanisme de Mint :** L'émission de nouveaux jetons est strictement contrôlée afin d'éviter toute inflation non désirée, gérée via un mécanisme de propriété sécurisé (`Ownable`).
+| Élément | Choix |
+|---|---|
+| Blockchain | Ethereum Sepolia |
+| Chain ID | `11155111` |
+| Standard | ERC-20 |
+| Langage | Solidity `^0.8.20`, compilé en `v0.8.34` pour le déploiement |
+| Outil | Remix IDE |
+| Portefeuille | MetaMask |
+| Bibliothèque | OpenZeppelin Contracts |
+| Nom | `MoiQuandJeCreeUnToken42` |
+| Symbole | `MQCT` |
+| Décimales | 18 |
+| Offre initiale | 42 000 000 MQCT |
 
-## 3. Sécurité et Architecture des Contrats
+Le nom contient `42`, conformément à la contrainte du sujet. Le symbole `MQCT` est le ticker utilisé pour identifier le token.
 
-Pour prévenir les vulnérabilités courantes des smart contracts (failles logiques, erreurs de contrôle d'accès), le code repose sur les briques logicielles d'**OpenZeppelin**.
+## 3. Fonctionnement du token
 
-* **Héritage sécurisé :** Utilisation de contrats de base audités pour la gestion des soldes, des transferts et des autorisations d'approbation.
-* **Encapsulation :** Séparation claire des rôles administratifs pour empêcher l'exécution de fonctions critiques par des utilisateurs non autorisés.
+Le contrat est basé sur l’implémentation ERC-20 d’OpenZeppelin. Il fournit les opérations standard suivantes :
 
-## 4. Partie Bonus : Gouvernance Multisig
+- consultation du nom, du symbole, des décimales et de l’offre totale ;
+- consultation du solde d’une adresse ;
+- transfert de tokens ;
+- approbation d’un compte ou d’un contrat ;
+- transfert utilisant une autorisation existante.
 
-Afin de renforcer la sécurité des actifs et d'éliminer les points de défaillance uniques, une architecture de portefeuille multi-signature (**Multisig**) a été implémentée et couplée au projet.
+Lors du déploiement, 42 000 000 tokens sont créés et attribués au compte déployeur.
 
-* **Principe de fonctionnement :** Aucune transaction ou modification critique ne peut être exécutée de manière unilatérale. Un seuil minimal de validations ($M$ signatures requises sur $N$ propriétaires) est indispensable.
-* **Cycle de vie d'une transaction :**
-1. Un propriétaire soumet une proposition de transaction (`submitTransaction`).
-2. Les co-signataires examinent et approuvent la proposition (`confirmTransaction`).
-3. Dès que le seuil requis est atteint, la transaction est exécutée de façon autonome par le smart contract (`executeTransaction`).
+La fonction `mint` permet au propriétaire de créer des tokens supplémentaires. Elle est protégée par `onlyOwner`. L’offre de 42 000 000 tokens est donc une offre initiale et non une limite maximale. Le propriétaire doit conserver la clé du compte de manière sécurisée et informer les utilisateurs de ce pouvoir administratif.
 
+Le propriétaire initial est le compte MetaMask ayant déployé le contrat. La fonction `owner()` permet de contrôler cette adresse.
 
+## 4. Sécurité et limites
 
-## 5. Déploiement et Utilisation
+Les contrôles de soldes, transferts et autorisations reposent sur OpenZeppelin. L’accès à `mint` est limité au propriétaire du contrat.
 
-Le projet est déployé sur le réseau de test **Sepolia** pour valider l'ensemble des flux transactionnels en conditions réelles sans engager de fonds réels.
+Les points importants à communiquer aux utilisateurs sont les suivants :
 
-* **Réseau :** Ethereum Sepolia Testnet
-* **Smart Contract Token :** À renseigner (Adresse du contrat sur Sepolia Etherscan)
-* **Smart Contract Multisig :** À renseigner (Adresse du contrat sur Sepolia Etherscan)
+- la blockchain ne permet pas d’annuler un déploiement ou une transaction confirmée ;
+- les frais de transaction et les opérations sur le réseau Sepolia restent soumis au fonctionnement de la blockchain ;
+- la possession de la clé privée du propriétaire donne accès aux fonctions protégées par `onlyOwner` ;
+- la fonction `mint` peut augmenter l’offre totale ;
+- les adresses et liens indiqués dans ce document doivent correspondre au déploiement réellement publié.
 
-## Conclusion
+## 5. Déploiement et utilisation
 
-Token42 démontre la capacité à concevoir des actifs numériques robustes en combinant un standard ERC-20 optimisé et une gouvernance collective sécurisée par un multisig. Ce cadre technique pose les bases d'une architecture décentralisée fiable, transparente et extensible.
+Le déploiement est réalisé avec Remix IDE et MetaMask :
+
+1. sélectionner Ethereum Sepolia dans MetaMask ;
+2. ouvrir `code/Token42.sol` dans Remix, ou `code/Token42_flattened.sol` si les imports ne sont pas résolus ;
+3. compiler avec Solidity `v0.8.34` pour reproduire le contrat publié ;
+4. choisir le fournisseur `Injected Provider - MetaMask` ;
+5. déployer `MoiQuandJeCreeUnToken42` sans paramètre ;
+6. confirmer la transaction dans MetaMask ;
+7. conserver l’adresse du contrat et vérifier le code sur Sepolia Etherscan.
+
+Les tests manuels minimaux sont : vérifier les métadonnées, vérifier l’offre et le solde initial, effectuer un transfert, contrôler le propriétaire et vérifier qu’un compte non propriétaire ne peut pas appeler `mint`.
+
+## 6. Informations du déploiement
+
+Informations du déploiement public :
+
+- **Réseau :** Ethereum Sepolia
+- **Chain ID :** `11155111`
+- **Adresse du token :** `0x0739C18260E1FF9ceD7267A3D4F08fBCA0485e2c`
+- **Hash de transaction de déploiement :** `0x0ae08a69521d967f7cec60e0c0f249b57c3aad47662628cf2ab477dff2990083`
+- **Lien vers Sepolia Etherscan :** [ouvrir le contrat](https://sepolia.etherscan.io/address/0x0739C18260E1FF9ceD7267A3D4F08fBCA0485e2c)
+- **Code vérifié :** [oui, sur Sepolia Blockscout](https://eth-sepolia.blockscout.com/address/0x0739C18260E1FF9ceD7267A3D4F08fBCA0485e2c#code)
+
+## 7. Références dans le dépôt
+
+- Contrat source : [`code/Token42.sol`](../code/Token42.sol)
+- Version aplatie utilisable dans Remix : [`code/Token42_flattened.sol`](../code/Token42_flattened.sol)
+- Procédure de déploiement : [`deployment/README.md`](../deployment/README.md)
